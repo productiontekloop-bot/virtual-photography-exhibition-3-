@@ -20,7 +20,7 @@ const placeholderCache = new Map<string, CanvasTexture>();
 // Maximum number of distinct high-res image textures to keep in GPU memory simultaneously
 const MAX_CACHED_TEXTURES = 32;
 
-const ARTWORK_LOAD_DISTANCE = 18;
+const ARTWORK_LOAD_DISTANCE = 14;
 
 /**
  * Keep the current room and nearby artwork textures ready while avoiding an eager

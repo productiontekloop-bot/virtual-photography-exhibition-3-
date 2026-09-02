@@ -9,6 +9,9 @@ const scratchPosTarget = new Vector3();
 const scratchLookTarget = new Vector3();
 const scratchDir = new Vector3();
 const scratchTargetDir = new Vector3();
+const scratchOrbitPosition = new Vector3();
+const scratchFloorplanPosition = new Vector3(0, 42, 0.01);
+const scratchFloorplanLookAt = new Vector3(0, 0, 0);
 
 const automaticDoorways = [
   { roomId: 'room-5', x: -10, z: 0 },
@@ -331,15 +334,16 @@ export default function PlayerController() {
         const x = orbitCenter.current.x + orbitRadius.current * Math.sin(orbitPhi.current) * Math.sin(orbitTheta.current);
         const y = orbitRadius.current * Math.cos(orbitPhi.current);
         const z = orbitCenter.current.z + orbitRadius.current * Math.sin(orbitPhi.current) * Math.cos(orbitTheta.current);
-        camera.position.lerp(new Vector3(x, y, z), 0.15);
+        scratchOrbitPosition.set(x, y, z);
+        camera.position.lerp(scratchOrbitPosition, 0.15);
         camera.lookAt(orbitCenter.current);
       }
       return;
     }
 
     if (viewMode === 'floorplan' && !selectedArtwork) {
-      camera.position.lerp(new Vector3(0, 42, 0.01), 0.1);
-      camera.lookAt(new Vector3(0, 0, 0));
+      camera.position.lerp(scratchFloorplanPosition, 0.1);
+      camera.lookAt(scratchFloorplanLookAt);
       return;
     }
 

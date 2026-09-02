@@ -241,7 +241,7 @@ export const EXHIBITIONS: RoomData[] = [
       // West Wall (Dividing with Room 5, X = -9.82) - 3 Artworks
       {
         id: "r2-w1",
-        image: "/images/room-2/1.png",
+        image: "/images/room-2/1.webp",
         title: "Shadow Siphon I",
         artist: "Studio Ades",
         year: "2025",
@@ -257,7 +257,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r2-w2",
-        image: "/images/room-2/2.jpg",
+        image: "/images/room-2/2.webp",
         title: "Slit Aperture II",
         artist: "Studio Ades",
         year: "2025",
@@ -273,7 +273,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r2-w3",
-        image: "/images/room-2/3.png",
+        image: "/images/room-2/3.webp",
         title: "Monochrome Wave III",
         artist: "Studio Ades",
         year: "2026",
@@ -290,7 +290,7 @@ export const EXHIBITIONS: RoomData[] = [
       // South Wall (Z = 17.82) - 3 Artworks
       {
         id: "r2-s1",
-        image: "/images/room-2/4.png",
+        image: "/images/room-2/4.webp",
         title: "Dawn Horizon IV",
         artist: "Studio Ades",
         year: "2025",
@@ -306,7 +306,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r2-s2",
-        image: "/images/room-2/5.png",
+        image: "/images/room-2/5.webp",
         title: "Prism Dispersion V",
         artist: "Studio Ades",
         year: "2026",
@@ -322,7 +322,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r2-s3",
-        image: "/images/room-2/6.png",
+        image: "/images/room-2/6.webp",
         title: "Fog Silhouette VI",
         artist: "Studio Ades",
         year: "2026",
@@ -339,7 +339,7 @@ export const EXHIBITIONS: RoomData[] = [
       // East Wall (Dividing Wall with Room 1, X = 3.82) - 3 Artworks
       {
         id: "r2-e1",
-        image: "/images/room-2/7.png",
+        image: "/images/room-2/7.webp",
         title: "Alpine Reflection VII",
         artist: "Studio Ades",
         year: "2025",
@@ -355,7 +355,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r2-e2",
-        image: "/images/room-2/8.png",
+        image: "/images/room-2/8.webp",
         title: "Canopy Ray VIII",
         artist: "Studio Ades",
         year: "2026",
@@ -371,7 +371,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r2-e3",
-        image: "/images/room-2/9.png",
+        image: "/images/room-2/9.webp",
         title: "Foliage Glow IX",
         artist: "Studio Ades",
         year: "2026",
@@ -388,7 +388,7 @@ export const EXHIBITIONS: RoomData[] = [
       // North Wall (Z = 3.38, flanking entry door at X = -3) - 2 Artworks
       {
         id: "r2-n1",
-        image: "/images/room-2/10.png",
+        image: "/images/room-2/10.webp",
         title: "Valley Mist X",
         artist: "Studio Ades",
         year: "2026",
@@ -630,7 +630,7 @@ export const EXHIBITIONS: RoomData[] = [
       // North Wall (Z = -17.82) - 3 Artworks
       {
         id: "r4-n1",
-        image: "/images/room-4/aa.jpeg",
+        image: "/images/room-4/a2.webp",
         title: "Glacial Basin I",
         artist: "Studio Ades",
         year: "2025",
@@ -645,7 +645,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r4-n2",
-        image: "/images/room-4/a2.jpeg",
+        image: "/images/room-4/a3.webp",
         title: "Valley Cloud Inversion II",
         artist: "Studio Ades",
         year: "2025",
@@ -660,7 +660,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r4-n3",
-        image: "/images/room-4/a3.png",
+        image: "/images/room-4/a4.webp",
         title: "Ancient Redwoods III",
         artist: "Studio Ades",
         year: "2026",
@@ -676,7 +676,7 @@ export const EXHIBITIONS: RoomData[] = [
       // West Wall (Dividing Wall with Room 5, X = -9.82) - 3 Artworks
       {
         id: "r4-w1",
-        image: "/images/room-4/a4.png",
+        image: "/images/room-4/a4.webp",
         title: "Coastal Tide IV",
         artist: "Studio Ades",
         year: "2025",
@@ -691,7 +691,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r4-w2",
-        image: "/images/room-4/a5.png",
+        image: "/images/room-4/a6.webp",
         title: "High Ridge Summit V",
         artist: "Studio Ades",
         year: "2025",
@@ -706,7 +706,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r4-w3",
-        image: "/images/room-4/a6.png",
+        image: "/images/room-4/a7.webp",
         title: "Verdant Meadows VI",
         artist: "Studio Ades",
         year: "2026",
@@ -722,7 +722,7 @@ export const EXHIBITIONS: RoomData[] = [
       // East Wall (Dividing Wall with Room 3, X = 3.82) - 3 Artworks
       {
         id: "r4-e1",
-        image: "/images/room-4/a7.png",
+        image: "/images/room-4/a8.webp",
         title: "Desert Dune Crest VII",
         artist: "Studio Ades",
         year: "2025",
@@ -737,7 +737,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r4-e2",
-        image: "/images/room-4/a8.png",
+        image: "/images/room-4/a9.webp",
         title: "Tundra Silence VIII",
         artist: "Studio Ades",
         year: "2026",
@@ -752,7 +752,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r4-e3",
-        image: "/images/room-4/a9.png",
+        image: "/images/room-4/aa.webp",
         title: "Alpine Spires IX",
         artist: "Studio Ades",
         year: "2026",
@@ -820,7 +820,7 @@ export const EXHIBITIONS: RoomData[] = [
       // Long West Wall (X = -17.82) - 8 Artworks
       {
         id: "r5-w1",
-        image: "/images/room-5/t1.jpg",
+        image: "/images/room-5/t1.webp",
         title: "Chromatic Tension I",
         artist: "Studio Ades",
         year: "2024",
@@ -835,7 +835,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r5-w2",
-        image: "/images/room-5/t2.png",
+        image: "/images/room-5/t2.webp",
         title: "Monochrome Undulations II",
         artist: "Studio Ades",
         year: "2024",
@@ -850,7 +850,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r5-w3",
-        image: "/images/room-5/3.png",
+        image: "/images/room-5/t3.webp",
         title: "Travertine Diptych III",
         artist: "Studio Ades",
         year: "2025",
@@ -865,7 +865,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r5-w4",
-        image: "/images/room-5/t4.png",
+        image: "/images/room-5/t4.webp",
         title: "Golden Hour Solitude IV",
         artist: "Studio Ades",
         year: "2025",
@@ -880,7 +880,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r5-w5",
-        image: "/images/room-5/t5.png",
+        image: "/images/room-5/t5.webp",
         title: "Vertical Monolith V",
         artist: "Studio Ades",
         year: "2025",
@@ -895,7 +895,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r5-w6",
-        image: "/images/room-5/t6.png",
+        image: "/images/room-5/t6.webp",
         title: "Architectural Grid VI",
         artist: "Studio Ades",
         year: "2026",
@@ -910,7 +910,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r5-w7",
-        image: "/images/room-5/t7.png",
+        image: "/images/room-5/t7.webp",
         title: "Prismatic Horizon VII",
         artist: "Studio Ades",
         year: "2026",
@@ -925,7 +925,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r5-w8",
-        image: "/images/room-5/t8.png",
+        image: "/images/room-5/t8.webp",
         title: "Dune Crests VIII",
         artist: "Studio Ades",
         year: "2026",
@@ -942,7 +942,7 @@ export const EXHIBITIONS: RoomData[] = [
       // North Wall (Z = -17.82) - 2 Artworks
       {
         id: "r5-n1",
-        image: "/images/room-5/t9.png",
+        image: "/images/room-5/t9.webp",
         title: "Forest Solitude IX",
         artist: "Studio Ades",
         year: "2026",
@@ -957,7 +957,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r5-n2",
-        image: "/images/room-5/t10.jpg",
+        image: "/images/room-5/t10.webp",
         title: "Granite Sanctuary X",
         artist: "Studio Ades",
         year: "2026",
@@ -974,7 +974,7 @@ export const EXHIBITIONS: RoomData[] = [
       // East Wall Upper Section (X = -10.18, North of door: Z = -18 to -1.5) - 3 Artworks
       {
         id: "r5-e1",
-        image: "/images/room-5/t11.jpg",
+        image: "/images/room-5/t11.webp",
         title: "Alpine Horizon XI",
         artist: "Studio Ades",
         year: "2025",
@@ -989,7 +989,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r5-e2",
-        image: "/images/room-5/t12.jpg",
+        image: "/images/room-5/t12.webp",
         title: "Volumetric Cathedral XII",
         artist: "Studio Ades",
         year: "2026",
