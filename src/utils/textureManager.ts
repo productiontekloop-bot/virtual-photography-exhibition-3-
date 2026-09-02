@@ -18,18 +18,26 @@ const textureCache = new Map<string, CachedTextureEntry>();
 const placeholderCache = new Map<string, CanvasTexture>();
 
 // Maximum number of distinct high-res image textures to keep in GPU memory simultaneously
-const MAX_CACHED_TEXTURES = 96; // Stores all gallery artworks seamlessly
+const MAX_CACHED_TEXTURES = 32;
+
+const ARTWORK_LOAD_DISTANCE = 18;
 
 /**
- * Determine if a room should have its high-res image assets loaded based on visitor location.
- * Loads all rooms for instant, seamless high-resolution photographic display from any viewpoint.
+ * Keep the current room and nearby artwork textures ready while avoiding an eager
+ * request for the full gallery at startup.
  */
 export function isRoomWithinLoadDistance(
-  _roomId: string,
-  _activeRoomId: string,
-  _visitorPos: [number, number, number]
+  roomId: string,
+  activeRoomId: string,
+  visitorPos: [number, number, number],
+  artworkPosition?: [number, number, number]
 ): boolean {
-  return true;
+  if (roomId === 'hallway' || roomId === activeRoomId) return true;
+  if (!artworkPosition) return false;
+
+  const dx = artworkPosition[0] - visitorPos[0];
+  const dz = artworkPosition[2] - visitorPos[2];
+  return dx * dx + dz * dz <= ARTWORK_LOAD_DISTANCE * ARTWORK_LOAD_DISTANCE;
 }
 
 /**
@@ -40,8 +48,8 @@ export function getOrCreatePlaceholderTexture(artwork: ArtworkData): CanvasTextu
   if (cached) return cached;
 
   const canvas = document.createElement('canvas');
-  const targetW = 1024;
-  const targetH = 716;
+  const targetW = 512;
+  const targetH = 358;
   canvas.width = targetW;
   canvas.height = targetH;
   const ctx = canvas.getContext('2d');

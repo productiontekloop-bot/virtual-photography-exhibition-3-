@@ -74,7 +74,7 @@ export default function VirtualGallery() {
     <div id="canvas-container" className="w-full h-full select-none relative bg-[#E6E6E3] block">
       <Canvas
         shadows
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         camera={{
           fov: 56,
           near: 0.1,

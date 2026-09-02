@@ -9,9 +9,6 @@ interface ArtworkProps {
 }
 
 export default function Artwork({ artwork }: ArtworkProps) {
-  const activeRoomId = useGalleryStore((state) => state.activeRoomId);
-  const visitorPosition = useGalleryStore((state) => state.visitorPosition);
-
   const [texture, setTexture] = useState<Texture | null>(null);
   const pointerDownPos = useRef({ x: 0, y: 0 });
   const lastClickTime = useRef(0);
@@ -22,7 +19,12 @@ export default function Artwork({ artwork }: ArtworkProps) {
   }, [artwork]);
 
   // 2. High-res image texture loader with broad radius for seamless viewing
-  const shouldLoadImage = isRoomWithinLoadDistance(artwork.room, activeRoomId, visitorPosition);
+  const shouldLoadImage = useGalleryStore((state) => isRoomWithinLoadDistance(
+    artwork.room,
+    state.activeRoomId,
+    state.visitorPosition,
+    artwork.position
+  ));
 
   useEffect(() => {
     if (!shouldLoadImage) {
