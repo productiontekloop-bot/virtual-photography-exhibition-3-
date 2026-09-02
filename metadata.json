@@ -1,0 +1,8 @@
+{
+  "name": "Virtual Photography Exhibition",
+  "description": "An immersive 3D browser-based photography gallery walkthrough with multiple curated exhibition rooms, collision detection, smooth keyboard/mouse navigation, guided tour, and interactive artworks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
