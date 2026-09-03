@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { Texture, FrontSide } from 'three';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
 import { ArtworkData } from '../../data/exhibitions';
-import { getOrCreatePlaceholderTexture, loadArtworkTexture, isRoomWithinLoadDistance } from '../../utils/textureManager';
+import { getOrCreatePlaceholderTexture, loadArtworkTexture } from '../../utils/textureManager';
 
 interface ArtworkProps {
   artwork: ArtworkData;
@@ -18,12 +18,9 @@ export default function Artwork({ artwork }: ArtworkProps) {
     return getOrCreatePlaceholderTexture(artwork);
   }, [artwork]);
 
-  // 2. High-res image texture loader with broad radius for seamless viewing
-  const shouldLoadImage = useGalleryStore((state) => isRoomWithinLoadDistance(
-    artwork.room,
-    state.activeRoomId,
-    state.visitorPosition,
-    artwork.position
+  // Texture loading follows room transitions; the preloader handles the nearby room.
+  const shouldLoadImage = useGalleryStore((state) => (
+    artwork.room === 'hallway' || artwork.room === state.activeRoomId
   ));
 
   useEffect(() => {

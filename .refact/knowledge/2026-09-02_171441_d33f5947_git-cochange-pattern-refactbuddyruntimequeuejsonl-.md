@@ -4,7 +4,7 @@ title: "Git co-change pattern: .refact/buddy/runtime_queue.jsonl + src/component
 kind: pattern
 created: 2026-09-02
 updated: 2026-09-02
-review_after: 2026-10-03
+review_after: 2026-09-03
 status: proposed
 tags: ["cochange", "git", "pattern"]
 filenames: [".refact/buddy/runtime_queue.jsonl", "src/components/gallery/VirtualGallery.tsx"]
@@ -14,6 +14,9 @@ source_tool: "buddy_memory_lifecycle:git"
 source_confidence: 0.780
 source_commit: "5a3ef5e2f37d"
 source_content_hash: "84d05d9949ad32231280bdf6ea607a9786fecf1b351d4026a26bfd7259b92f28"
+review_needed: true
+occurrences: 2
+last_observed: "2026-09-03T00:49:16.155968100+00:00"
 ---
 
 Git co-change pattern: .refact/buddy/runtime_queue.jsonl + src/components/gallery/VirtualGallery.tsx

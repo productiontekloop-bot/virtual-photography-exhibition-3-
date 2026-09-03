@@ -91,7 +91,7 @@ export default function VirtualGallery() {
   return (
     <div id="canvas-container" className="w-full h-full select-none relative bg-[#E6E6E3] block">
       <Canvas
-        dpr={[1, 1.5]}
+        dpr={[1, 1.25]}
         frameloop="demand"
         camera={{
           fov: 56,

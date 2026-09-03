@@ -9,6 +9,7 @@ const textureLoader = new TextureLoader();
 interface CachedTextureEntry {
   texture: Texture;
   url: string;
+  artworkId: string;
   roomId: string;
   refCount: number;
   lastAccessed: number;
@@ -392,7 +393,7 @@ export function loadArtworkTexture(
       texture.colorSpace = SRGBColorSpace;
       texture.generateMipmaps = true;
       texture.minFilter = LinearMipmapLinearFilter;
-      texture.anisotropy = 4;
+      texture.anisotropy = 2;
 
       // Check if cache size exceeds limit, evict oldest unreferenced textures
       if (textureCache.size >= MAX_CACHED_TEXTURES) {
@@ -402,6 +403,7 @@ export function loadArtworkTexture(
       const entry: CachedTextureEntry = {
         texture,
         url: optimizedUrl,
+        artworkId: artwork.id,
         roomId: artwork.room,
         refCount: retain && isSubscribed ? 1 : 0,
         lastAccessed: Date.now()
@@ -454,9 +456,11 @@ function evictOldestTextures() {
  * Dispose texture for a specific artwork when unmounted
  */
 export function unloadArtworkTexture(artworkId: string) {
-  const entry = textureCache.get(artworkId);
-  if (entry) {
-    releaseTexture(artworkId);
+  for (const [cacheKey, entry] of textureCache.entries()) {
+    if (entry.artworkId === artworkId) {
+      releaseTexture(cacheKey);
+      return;
+    }
   }
 }
 

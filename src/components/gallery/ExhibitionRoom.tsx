@@ -1,6 +1,5 @@
 import { RoomData } from '../../data/exhibitions';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
-import { isRoomWithinLoadDistance } from '../../utils/textureManager';
 import Artwork from './Artwork';
 
 interface ExhibitionRoomProps {
@@ -10,14 +9,8 @@ interface ExhibitionRoomProps {
 export default function ExhibitionRoom({ room }: ExhibitionRoomProps) {
   const viewMode = useGalleryStore((state) => state.viewMode);
   const activeRoomId = useGalleryStore((state) => state.activeRoomId);
-  const visitorPosition = useGalleryStore((state) => state.visitorPosition);
 
-  const isVisible = viewMode !== 'walkthrough' || room.id === activeRoomId || isRoomWithinLoadDistance(
-    room.id,
-    activeRoomId,
-    visitorPosition,
-    room.centerPosition
-  );
+  const isVisible = viewMode !== 'walkthrough' || room.id === activeRoomId;
 
   if (!isVisible) return null;
 

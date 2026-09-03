@@ -1,5 +1,3 @@
-import { useRef } from 'react';
-import { DirectionalLight } from 'three';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
 
 export default function GalleryLighting() {
@@ -7,6 +5,13 @@ export default function GalleryLighting() {
   const viewMode = useGalleryStore((state) => state.viewMode);
 
   const isOverview = viewMode === 'perspective' || viewMode === 'floorplan';
+  const roomLights = [
+    { id: 'room-5', position: [-14, 3.6, -8] as [number, number, number] },
+    { id: 'room-4', position: [-3, 3.6, -10.6] as [number, number, number] },
+    { id: 'room-3', position: [11, 3.6, -10.6] as [number, number, number] },
+    { id: 'room-2', position: [-3, 3.6, 10.6] as [number, number, number] },
+    { id: 'room-1', position: [11, 3.6, 10.6] as [number, number, number] },
+  ];
 
   return (
     <>
@@ -40,47 +45,19 @@ export default function GalleryLighting() {
       <pointLight position={[6, 3.6, 0]} intensity={1.35} distance={20} decay={1.6} color="#FFFBF5" />
       <pointLight position={[13, 3.6, 0]} intensity={1.3} distance={20} decay={1.6} color="#FFFBF5" />
 
-      {/* 6. Room 5 (Long Gallery Wing on Left: X = -14, Z: -18 to +18) */}
-      <pointLight position={[-14, 3.6, -12]} intensity={1.4} distance={20} decay={1.6} color="#FFFDF8" />
-      <pointLight position={[-14, 3.6, -4]} intensity={1.45} distance={20} decay={1.6} color="#FFFDF8" />
-      <pointLight position={[-14, 3.6, 4]} intensity={1.45} distance={20} decay={1.6} color="#FFFDF8" />
-      <pointLight position={[-14, 3.6, 12]} intensity={1.4} distance={20} decay={1.6} color="#FFFDF8" />
-
-      {/* 7. Room 4 (Top Left: [-3, 0, -10.6]) */}
-      <pointLight 
-        position={[-3, 3.6, -10.6]} 
-        intensity={activeRoomId === 'room-4' ? 1.55 : 1.4} 
-        distance={22} 
-        decay={1.6}
-        color="#FFFBF5" 
-      />
-
-      {/* 8. Room 3 (Top Right: [11, 0, -10.6]) */}
-      <pointLight 
-        position={[11, 3.6, -10.6]} 
-        intensity={activeRoomId === 'room-3' ? 1.55 : 1.4} 
-        distance={22} 
-        decay={1.6}
-        color="#FFFBF5" 
-      />
-
-      {/* 9. Room 2 (Bottom Left: [-3, 0, 10.6]) */}
-      <pointLight 
-        position={[-3, 3.6, 10.6]} 
-        intensity={activeRoomId === 'room-2' ? 1.55 : 1.4} 
-        distance={22} 
-        decay={1.6}
-        color="#FFFBF5" 
-      />
-
-      {/* 10. Room 1 (Bottom Right: [11, 0, 10.6]) */}
-      <pointLight 
-        position={[11, 3.6, 10.6]} 
-        intensity={activeRoomId === 'room-1' ? 1.55 : 1.4} 
-        distance={22} 
-        decay={1.6}
-        color="#FFFBF5" 
-      />
+      {/* Room accents stay active in overview; walkthrough only needs its current room. */}
+      {roomLights
+        .filter((light) => isOverview || light.id === activeRoomId)
+        .map((light) => (
+          <pointLight
+            key={light.id}
+            position={light.position}
+            intensity={light.id === activeRoomId ? 1.55 : 1.4}
+            distance={22}
+            decay={1.6}
+            color="#FFFBF5"
+          />
+        ))}
     </>
   );
 }

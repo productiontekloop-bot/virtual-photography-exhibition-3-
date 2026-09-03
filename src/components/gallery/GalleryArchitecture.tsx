@@ -13,7 +13,7 @@ function getSharedFloorTextures(): { diffuse: CanvasTexture; bump: CanvasTexture
     return { diffuse: sharedFloorDiffuseMap, bump: sharedFloorBumpMap, roughness: sharedFloorRoughnessMap };
   }
 
-  const size = 2048;
+  const size = 1024;
   // 1. Diffuse canvas (Color & Grain)
   const diffCanvas = document.createElement('canvas');
   diffCanvas.width = size;

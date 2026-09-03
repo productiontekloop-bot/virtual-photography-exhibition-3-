@@ -138,6 +138,7 @@ export default function PlayerController() {
     const handleWheel = (e: WheelEvent) => {
       if (viewMode === 'perspective' || viewMode === 'floorplan') {
         orbitRadius.current = Math.max(20, Math.min(65, orbitRadius.current + e.deltaY * 0.03));
+        invalidate();
       }
     };
 
