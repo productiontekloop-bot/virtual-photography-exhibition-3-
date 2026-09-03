@@ -1,5 +1,5 @@
 import { TextureLoader, Texture, CanvasTexture, SRGBColorSpace, LinearMipmapLinearFilter, LinearFilter } from 'three';
-import { ArtworkData } from '../data/exhibitions';
+import { ArtworkData, EXHIBITIONS } from '../data/exhibitions';
 import { getOptimizedImageUrl } from './imageOptimizer';
 
 // Singleton TextureLoader
@@ -16,11 +16,42 @@ interface CachedTextureEntry {
 
 const textureCache = new Map<string, CachedTextureEntry>();
 const placeholderCache = new Map<string, CanvasTexture>();
+const pendingLoads = new Map<string, Set<(texture: Texture) => void>>();
+const progressListeners = new Set<(loaded: number, total: number) => void>();
+let requestedTextureCount = 0;
+let loadedTextureCount = 0;
 
 // Maximum number of distinct high-res image textures to keep in GPU memory simultaneously
 const MAX_CACHED_TEXTURES = 32;
 
 const ARTWORK_LOAD_DISTANCE = 14;
+
+function notifyProgress() {
+  progressListeners.forEach((listener) => listener(loadedTextureCount, requestedTextureCount));
+}
+
+export function subscribeToTextureProgress(listener: (loaded: number, total: number) => void) {
+  progressListeners.add(listener);
+  listener(loadedTextureCount, requestedTextureCount);
+  return () => progressListeners.delete(listener);
+}
+
+export function getRoomPreloadIds(activeRoomId: string, visitorPos: [number, number, number]) {
+  const nearbyRoom = EXHIBITIONS
+    .filter((room) => room.id !== activeRoomId)
+    .sort((a, b) => {
+      const distance = (room: typeof a) => Math.hypot(room.centerPosition[0] - visitorPos[0], room.centerPosition[2] - visitorPos[2]);
+      return distance(a) - distance(b);
+    })[0];
+  return [activeRoomId, nearbyRoom?.id].filter((id): id is string => Boolean(id));
+}
+
+export function preloadRoomAssets(roomIds: string[]) {
+  roomIds.forEach((roomId) => {
+    const room = EXHIBITIONS.find((candidate) => candidate.id === roomId);
+    room?.artworks.forEach((artwork) => loadArtworkTexture(artwork, () => undefined, false));
+  });
+}
 
 /**
  * Keep the current room and nearby artwork textures ready while avoiding an eager
@@ -300,10 +331,11 @@ export function getOrCreatePlaceholderTexture(artwork: ArtworkData): CanvasTextu
  */
 export function loadArtworkTexture(
   artwork: ArtworkData,
-  onLoaded: (tex: Texture) => void
+  onLoaded: (tex: Texture) => void,
+  retain = true
 ): () => void {
   const optimizedUrl = getOptimizedImageUrl(artwork.image, 720, 75);
-  const cacheKey = artwork.id;
+  const cacheKey = optimizedUrl;
 
   let isSubscribed = true;
 
@@ -322,20 +354,37 @@ export function loadArtworkTexture(
     };
   }
 
+  // Share an in-flight request between artwork meshes and preloads.
+  const pending = pendingLoads.get(cacheKey);
+  if (pending) {
+    if (retain) {
+      pending.add((texture) => {
+        if (!isSubscribed) return;
+        const entry = textureCache.get(cacheKey);
+        if (entry) {
+          entry.refCount += 1;
+          entry.lastAccessed = Date.now();
+        }
+        onLoaded(texture);
+      });
+    }
+    return () => {
+      isSubscribed = false;
+    };
+  }
+
+  pendingLoads.set(cacheKey, new Set());
+  requestedTextureCount += 1;
+  notifyProgress();
+
   // 2. Load asynchronously via Three.js TextureLoader
   textureLoader.load(
     optimizedUrl,
     (texture) => {
-      if (!isSubscribed) {
-        // Cancelled before load completed
-        texture.dispose();
-        return;
-      }
-
       texture.colorSpace = SRGBColorSpace;
       texture.generateMipmaps = true;
       texture.minFilter = LinearMipmapLinearFilter;
-      texture.anisotropy = 4; // High-precision sampling from oblique angles
+      texture.anisotropy = 4;
 
       // Check if cache size exceeds limit, evict oldest unreferenced textures
       if (textureCache.size >= MAX_CACHED_TEXTURES) {
@@ -346,15 +395,22 @@ export function loadArtworkTexture(
         texture,
         url: optimizedUrl,
         roomId: artwork.room,
-        refCount: 1,
+        refCount: retain ? 1 : 0,
         lastAccessed: Date.now()
       };
       textureCache.set(cacheKey, entry);
-      onLoaded(texture);
+      loadedTextureCount += 1;
+      notifyProgress();
+      const listeners = pendingLoads.get(cacheKey);
+      pendingLoads.delete(cacheKey);
+      listeners?.forEach((listener) => listener(texture));
+      if (isSubscribed && retain) onLoaded(texture);
     },
     undefined,
     () => {
-      // On error, fallback remains active
+      pendingLoads.delete(cacheKey);
+      loadedTextureCount += 1;
+      notifyProgress();
     }
   );
 
@@ -393,7 +449,7 @@ function evictOldestTextures() {
  * Dispose texture for a specific artwork when unmounted
  */
 export function unloadArtworkTexture(artworkId: string) {
-  const entry = textureCache.get(artworkId);
+  const entry = Array.from(textureCache.entries()).find(([, candidate]) => candidate.url === artworkId)?.[1];
   if (entry) {
     entry.refCount = Math.max(0, entry.refCount - 1);
     if (entry.refCount <= 0) {
