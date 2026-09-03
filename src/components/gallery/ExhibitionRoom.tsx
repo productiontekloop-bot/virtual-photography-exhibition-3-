@@ -8,14 +8,16 @@ interface ExhibitionRoomProps {
 }
 
 export default function ExhibitionRoom({ room }: ExhibitionRoomProps) {
-  const isVisible = useGalleryStore((state) => (
-    state.viewMode !== 'walkthrough' || isRoomWithinLoadDistance(
-      room.id,
-      state.activeRoomId,
-      state.visitorPosition,
-      room.centerPosition
-    )
-  ));
+  const viewMode = useGalleryStore((state) => state.viewMode);
+  const activeRoomId = useGalleryStore((state) => state.activeRoomId);
+  const visitorPosition = useGalleryStore((state) => state.visitorPosition);
+
+  const isVisible = viewMode !== 'walkthrough' || room.id === activeRoomId || isRoomWithinLoadDistance(
+    room.id,
+    activeRoomId,
+    visitorPosition,
+    room.centerPosition
+  );
 
   if (!isVisible) return null;
 

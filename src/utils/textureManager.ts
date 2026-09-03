@@ -30,6 +30,16 @@ function notifyProgress() {
   progressListeners.forEach((listener) => listener(loadedTextureCount, requestedTextureCount));
 }
 
+function releaseTexture(cacheKey: string) {
+  const entry = textureCache.get(cacheKey);
+  if (!entry) return;
+  entry.refCount = Math.max(0, entry.refCount - 1);
+  if (entry.refCount === 0 && !pendingLoads.has(cacheKey)) {
+    entry.texture.dispose();
+    textureCache.delete(cacheKey);
+  }
+}
+
 export function subscribeToTextureProgress(listener: (loaded: number, total: number) => void) {
   progressListeners.add(listener);
   listener(loadedTextureCount, requestedTextureCount);
@@ -348,9 +358,7 @@ export function loadArtworkTexture(
 
     return () => {
       isSubscribed = false;
-      if (existing) {
-        existing.refCount = Math.max(0, existing.refCount - 1);
-      }
+      releaseTexture(cacheKey);
     };
   }
 
@@ -395,7 +403,7 @@ export function loadArtworkTexture(
         texture,
         url: optimizedUrl,
         roomId: artwork.room,
-        refCount: retain ? 1 : 0,
+        refCount: retain && isSubscribed ? 1 : 0,
         lastAccessed: Date.now()
       };
       textureCache.set(cacheKey, entry);
@@ -416,10 +424,7 @@ export function loadArtworkTexture(
 
   return () => {
     isSubscribed = false;
-    const entry = textureCache.get(cacheKey);
-    if (entry) {
-      entry.refCount = Math.max(0, entry.refCount - 1);
-    }
+    releaseTexture(cacheKey);
   };
 }
 
@@ -449,13 +454,9 @@ function evictOldestTextures() {
  * Dispose texture for a specific artwork when unmounted
  */
 export function unloadArtworkTexture(artworkId: string) {
-  const entry = Array.from(textureCache.entries()).find(([, candidate]) => candidate.url === artworkId)?.[1];
+  const entry = textureCache.get(artworkId);
   if (entry) {
-    entry.refCount = Math.max(0, entry.refCount - 1);
-    if (entry.refCount <= 0) {
-      entry.texture.dispose();
-      textureCache.delete(artworkId);
-    }
+    releaseTexture(artworkId);
   }
 }
 

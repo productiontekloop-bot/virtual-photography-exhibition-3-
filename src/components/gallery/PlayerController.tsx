@@ -64,7 +64,7 @@ function updateAutomaticDoors(
 }
 
 export default function PlayerController() {
-  const { camera, gl } = useThree();
+  const { camera, gl, invalidate } = useThree();
   
   const viewMode = useGalleryStore((state) => state.viewMode);
   const selectedArtwork = useGalleryStore((state) => state.selectedArtwork);
@@ -129,6 +129,7 @@ export default function PlayerController() {
       const code = e.code;
       if (code in keys.current) {
         keys.current[code] = true;
+        invalidate();
       }
     };
 
@@ -136,6 +137,7 @@ export default function PlayerController() {
       const code = e.code;
       if (code in keys.current) {
         keys.current[code] = false;
+        invalidate();
       }
     };
 
@@ -175,6 +177,8 @@ export default function PlayerController() {
         orbitTheta.current -= deltaX * 0.005;
         orbitPhi.current = Math.max(0.2, Math.min(Math.PI / 2 - 0.05, orbitPhi.current + deltaY * 0.005));
       }
+
+      invalidate();
 
       previousMousePosition.current = { x: e.clientX, y: e.clientY };
     };
@@ -239,6 +243,8 @@ export default function PlayerController() {
         orbitTheta.current -= deltaX * 0.007;
         orbitPhi.current = Math.max(0.2, Math.min(Math.PI / 2 - 0.05, orbitPhi.current + deltaY * 0.007));
       }
+
+      invalidate();
 
       previousTouchPosition.current = {
         x: e.touches[0].clientX,
@@ -325,6 +331,7 @@ export default function PlayerController() {
         }
         store.clearInterpolationTargets();
       }
+      invalidate();
       return;
     }
 
@@ -337,6 +344,7 @@ export default function PlayerController() {
         scratchOrbitPosition.set(x, y, z);
         camera.position.lerp(scratchOrbitPosition, 0.15);
         camera.lookAt(orbitCenter.current);
+        invalidate();
       }
       return;
     }
@@ -344,6 +352,7 @@ export default function PlayerController() {
     if (viewMode === 'floorplan' && !selectedArtwork) {
       camera.position.lerp(scratchFloorplanPosition, 0.1);
       camera.lookAt(scratchFloorplanLookAt);
+      if (camera.position.distanceTo(scratchFloorplanPosition) > 0.05) invalidate();
       return;
     }
 
@@ -354,6 +363,7 @@ export default function PlayerController() {
         tourTimer.current = 0;
         nextTourNode();
       }
+      invalidate();
     } else {
       tourTimer.current = 0;
     }
@@ -391,6 +401,7 @@ export default function PlayerController() {
       camera.position.x = verifiedPos.x;
       camera.position.y = 1.65;
       camera.position.z = verifiedPos.z;
+      invalidate();
     }
 
     const movedRoom = getRoomIdFromPosition(camera.position.x, camera.position.z);
@@ -413,6 +424,8 @@ export default function PlayerController() {
 
     currentLookAt.current.copy(camera.position).add(scratchTargetDir);
     camera.lookAt(currentLookAt.current);
+
+    if (isDragging.current) invalidate();
 
     // Sync player coordinates to store
     const now = state.clock.getElapsedTime();

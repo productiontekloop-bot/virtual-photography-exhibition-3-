@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { EXHIBITIONS } from '../../data/exhibitions';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
 import { checkCollision, getRoomIdFromPosition } from '../../utils/collision';
@@ -8,13 +8,30 @@ import GalleryArchitecture from './GalleryArchitecture';
 import CentralHallway from './CentralHallway';
 import ExhibitionRoom from './ExhibitionRoom';
 import PlayerController from './PlayerController';
+import { getRoomPreloadIds, preloadRoomAssets } from '../../utils/textureManager';
+
+function RoomAssetPreloader() {
+  useEffect(() => {
+    let lastKey = '';
+    const preload = (state: ReturnType<typeof useGalleryStore.getState>) => {
+      if (state.viewMode !== 'walkthrough') return;
+      const key = getRoomPreloadIds(state.activeRoomId, state.visitorPosition).join('|');
+      if (key !== lastKey) {
+        lastKey = key;
+        preloadRoomAssets(key.split('|'));
+      }
+    };
+    preload(useGalleryStore.getState());
+    return useGalleryStore.subscribe(preload);
+  }, []);
+  return null;
+}
 
 export default function VirtualGallery() {
   const pointerDownPos = useRef({ x: 0, y: 0 });
   const pointerDownTime = useRef(0);
   
   const moveToPosition = useGalleryStore((state) => state.moveToPosition);
-  const visitorPosition = useGalleryStore((state) => state.visitorPosition);
   const selectedArtwork = useGalleryStore((state) => state.selectedArtwork);
   const viewMode = useGalleryStore((state) => state.viewMode);
 
@@ -54,6 +71,7 @@ export default function VirtualGallery() {
         // Room changes must be door-to-door ONLY:
         // Players can only move within their current room when clicking on the floor.
         // Room transitions can only be made by walking through doors or interacting directly with doors.
+        const { visitorPosition } = useGalleryStore.getState();
         const currentRoom = getRoomIdFromPosition(visitorPosition[0], visitorPosition[2]);
         const verified = checkCollision(e.point.x, e.point.z, visitorPosition[0], visitorPosition[2]);
         const targetRoom = getRoomIdFromPosition(verified.x, verified.z);
@@ -74,6 +92,7 @@ export default function VirtualGallery() {
     <div id="canvas-container" className="w-full h-full select-none relative bg-[#E6E6E3] block">
       <Canvas
         dpr={[1, 1.5]}
+        frameloop="demand"
         camera={{
           fov: 56,
           near: 0.1,
@@ -81,7 +100,7 @@ export default function VirtualGallery() {
           position: [-15, 27, 29]
         }}
         gl={{
-          antialias: true,
+          antialias: typeof navigator === 'undefined' || (navigator.hardwareConcurrency ?? 8) > 4,
           powerPreference: 'high-performance',
           alpha: false,
           preserveDrawingBuffer: false
@@ -106,6 +125,7 @@ export default function VirtualGallery() {
 
             {/* Camera & Interactive navigation controller */}
             <PlayerController />
+            <RoomAssetPreloader />
 
             {/* Complete 5-room modern art gallery architecture with wooden doors */}
             <GalleryArchitecture />

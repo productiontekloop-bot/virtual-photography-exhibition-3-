@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, CanvasTexture, RepeatWrapping, SRGBColorSpace, LinearMipmapLinearFilter } from 'three';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
 
@@ -86,6 +86,7 @@ export default function GalleryDoor({
   const passedThrough = useRef(false);
 
   const woodTexture = useMemo(() => getSharedWoodTexture(), []);
+  const { invalidate } = useThree();
 
   // Frame tick: smooth physical swing animation
   useFrame((_, delta) => {
@@ -130,6 +131,7 @@ export default function GalleryDoor({
     if (hingeRef.current) {
       hingeRef.current.rotation.y = hingeSide === 'left' ? -currentAngle.current : currentAngle.current;
     }
+    if (Math.abs(currentAngle.current - targetAngle) > 0.001) invalidate();
   });
 
   const hingeOffset = hingeSide === 'left' ? -doorWidth / 2 : doorWidth / 2;

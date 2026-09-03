@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { subscribeToTextureProgress } from '../../utils/textureManager';
 
 export default function LoadingScreen() {
   const [progress, setProgress] = useState(0);
@@ -6,19 +7,10 @@ export default function LoadingScreen() {
   const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
-    // Smooth progress bar simulation
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        const step = Math.random() * 15;
-        return Math.min(100, Math.floor(prev + step));
-      });
-    }, 150);
-
-    return () => clearInterval(interval);
+    const unsubscribe = subscribeToTextureProgress((loaded, total) => {
+      setProgress(total === 0 ? 0 : Math.round((loaded / total) * 100));
+    });
+    return () => { unsubscribe(); };
   }, []);
 
   useEffect(() => {
