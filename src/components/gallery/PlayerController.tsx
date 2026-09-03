@@ -13,56 +13,6 @@ const scratchOrbitPosition = new Vector3();
 const scratchFloorplanPosition = new Vector3(0, 42, 0.01);
 const scratchFloorplanLookAt = new Vector3(0, 0, 0);
 
-const automaticDoorways = [
-  { roomId: 'room-5', x: -10, z: 0 },
-  { roomId: 'room-4', x: -3, z: -3.2 },
-  { roomId: 'room-3', x: 11, z: -3.2 },
-  { roomId: 'room-2', x: -3, z: 3.2 },
-  { roomId: 'room-1', x: 11, z: 3.2 },
-] as const;
-
-const automaticDoorOpenDistance = 2.4;
-const automaticDoorCrossingDistance = 1.8;
-const automaticDoorClearDistance = 1.1;
-
-function updateAutomaticDoors(
-  x: number,
-  z: number,
-  currentRoom: string,
-  previousRoom: string,
-  crossedDoors: Record<string, boolean>,
-  doorsOpen: Record<string, boolean>,
-  setDoorOpen: (roomId: string, isOpen: boolean) => void,
-) {
-  automaticDoorways.forEach(({ roomId, x: doorX, z: doorZ }) => {
-    const distance = Math.hypot(x - doorX, z - doorZ);
-
-    // Keep a passed door closed until the visitor has left its proximity range.
-    if (crossedDoors[roomId] && distance > automaticDoorOpenDistance) {
-      crossedDoors[roomId] = false;
-    }
-
-    if (distance <= automaticDoorOpenDistance && !doorsOpen[roomId] && !crossedDoors[roomId]) {
-      setDoorOpen(roomId, true);
-    }
-
-    if (
-      doorsOpen[roomId] &&
-      (
-        (previousRoom !== currentRoom && distance <= automaticDoorCrossingDistance) ||
-        (currentRoom === roomId && distance >= automaticDoorClearDistance)
-      )
-    ) {
-      crossedDoors[roomId] = true;
-    }
-
-    if (crossedDoors[roomId] && distance >= automaticDoorClearDistance) {
-      setDoorOpen(roomId, false);
-      crossedDoors[roomId] = false;
-    }
-  });
-}
-
 export default function PlayerController() {
   const { camera, gl, invalidate } = useThree();
   
@@ -99,8 +49,6 @@ export default function PlayerController() {
 
   // Store sync rate controller
   const lastStoreUpdate = useRef<number>(0);
-  const crossedDoors = useRef<Record<string, boolean>>({});
-  const setDoorOpen = useGalleryStore((state) => state.setDoorOpen);
 
   // Initialize camera position from store on mount
   useEffect(() => {
@@ -278,32 +226,10 @@ export default function PlayerController() {
       nextTourNode,
     } = store;
 
-    const currentRoom = getRoomIdFromPosition(camera.position.x, camera.position.z);
-    updateAutomaticDoors(
-      camera.position.x,
-      camera.position.z,
-      currentRoom,
-      currentRoom,
-      crossedDoors.current,
-      useGalleryStore.getState().doorsOpen,
-      setDoorOpen,
-    );
-
     // 1. HANDLE SMOOTH WARPING INTERPOLATION
     if (targetPosition) {
       scratchPosTarget.set(targetPosition[0], targetPosition[1], targetPosition[2]);
       camera.position.lerp(scratchPosTarget, 0.06);
-
-      const interpolatedRoom = getRoomIdFromPosition(camera.position.x, camera.position.z);
-      updateAutomaticDoors(
-        camera.position.x,
-        camera.position.z,
-        interpolatedRoom,
-        currentRoom,
-        crossedDoors.current,
-        useGalleryStore.getState().doorsOpen,
-        setDoorOpen,
-      );
 
       if (targetLookAt) {
         scratchLookTarget.set(targetLookAt[0], targetLookAt[1], targetLookAt[2]);
@@ -403,17 +329,6 @@ export default function PlayerController() {
       camera.position.z = verifiedPos.z;
       invalidate();
     }
-
-    const movedRoom = getRoomIdFromPosition(camera.position.x, camera.position.z);
-    updateAutomaticDoors(
-      camera.position.x,
-      camera.position.z,
-      movedRoom,
-      currentRoom,
-      crossedDoors.current,
-      useGalleryStore.getState().doorsOpen,
-      setDoorOpen,
-    );
 
     // 5. APPLY VIEW ROTATION (YAW / PITCH)
     scratchTargetDir.set(

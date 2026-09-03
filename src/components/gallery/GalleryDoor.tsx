@@ -3,6 +3,9 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, CanvasTexture, RepeatWrapping, SRGBColorSpace, LinearMipmapLinearFilter } from 'three';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
 
+const doorOpenDistance = 2.4;
+const doorCloseDistance = 3.0;
+
 // Procedural rich walnut woodgrain texture
 let sharedWoodTexture: CanvasTexture | null = null;
 function getSharedWoodTexture(): CanvasTexture {
@@ -73,49 +76,27 @@ export default function GalleryDoor({
 }: GalleryDoorProps) {
   const hingeRef = useRef<any>(null);
   const currentAngle = useRef(initialAngle);
-  const pointerDownPos = useRef({ x: 0, y: 0 });
-  const lastToggleTime = useRef(0);
 
   // Subscribe to door open/closed state in store
   const isOpen = useGalleryStore((state) => state.doorsOpen[roomId] ?? false);
-  const visitorPosition = useGalleryStore((state) => state.visitorPosition);
-  const activeRoomId = useGalleryStore((state) => state.activeRoomId);
-  const toggleDoor = useGalleryStore((state) => state.toggleDoor);
   const setDoorOpen = useGalleryStore((state) => state.setDoorOpen);
-  const previousActiveRoom = useRef(activeRoomId);
-  const passedThrough = useRef(false);
 
   const woodTexture = useMemo(() => getSharedWoodTexture(), []);
-  const { invalidate } = useThree();
+  const { camera, invalidate } = useThree();
 
   // Frame tick: smooth physical swing animation
   useFrame((_, delta) => {
     const visitorDistance = Math.hypot(
-      visitorPosition[0] - position[0],
-      visitorPosition[2] - position[2],
+      camera.position.x - position[0],
+      camera.position.z - position[2],
     );
-
-    if (previousActiveRoom.current === roomId && activeRoomId !== roomId) {
-      passedThrough.current = true;
+    const shouldBeOpen = isOpen
+      ? visitorDistance < doorCloseDistance
+      : visitorDistance <= doorOpenDistance;
+    if (shouldBeOpen !== isOpen) {
+      setDoorOpen(roomId, shouldBeOpen);
+      invalidate();
     }
-
-    if (activeRoomId === roomId) {
-      passedThrough.current = false;
-    }
-
-    if (
-      isOpen &&
-      (activeRoomId === roomId || passedThrough.current) &&
-      visitorDistance > 1.1
-    ) {
-      setDoorOpen(roomId, false);
-    }
-
-    if (passedThrough.current && visitorDistance > 2.4) {
-      passedThrough.current = false;
-    }
-
-    previousActiveRoom.current = activeRoomId;
 
     // 0 = closed, 1.45 rad (~83°) = open inward into the room
     const targetAngle = isOpen ? 1.45 : 0;
@@ -136,50 +117,10 @@ export default function GalleryDoor({
 
   const hingeOffset = hingeSide === 'left' ? -doorWidth / 2 : doorWidth / 2;
 
-  const triggerToggle = () => {
-    const now = Date.now();
-    if (now - lastToggleTime.current < 280) return;
-    lastToggleTime.current = now;
-    toggleDoor(roomId);
-  };
-
-  const handlePointerDown = (e: any) => {
-    e.stopPropagation();
-    pointerDownPos.current = {
-      x: e.clientX ?? e.nativeEvent?.clientX ?? 0,
-      y: e.clientY ?? e.nativeEvent?.clientY ?? 0,
-    };
-  };
-
-  const handlePointerUp = (e: any) => {
-    e.stopPropagation();
-    const cx = e.clientX ?? e.nativeEvent?.clientX ?? pointerDownPos.current.x;
-    const cy = e.clientY ?? e.nativeEvent?.clientY ?? pointerDownPos.current.y;
-    const dx = Math.abs(cx - pointerDownPos.current.x);
-    const dy = Math.abs(cy - pointerDownPos.current.y);
-    if (dx < 20 && dy < 20) {
-      triggerToggle();
-    }
-  };
-
-  // Hover feedback: pointer cursor only, no labels or details
-  const handlePointerOver = (e: any) => {
-    e.stopPropagation();
-    document.body.style.cursor = 'pointer';
-  };
-
-  const handlePointerOut = () => {
-    document.body.style.cursor = 'default';
-  };
-
   return (
     <group 
       position={position} 
       rotation={rotation}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
     >
       {/* ==================== 1. REALISTIC WOODEN DOOR FRAME ==================== */}
       {/* Top Header Jamb */}
