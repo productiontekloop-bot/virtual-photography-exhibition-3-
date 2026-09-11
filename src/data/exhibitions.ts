@@ -39,7 +39,6 @@ export const EXHIBITIONS: RoomData[] = [
   // =========================================================================
   {
     id: "room-1",
-    roomNumber: 1,
     title: "ROOM 1",
     subtitle: "URBAN VISTAS & MODERN METROPOLIS",
     description: "An architectural photography collection examining geometry, towering silhouettes, and urban light dynamics across global metropolises.",
@@ -104,7 +103,7 @@ export const EXHIBITIONS: RoomData[] = [
         year: "2025",
         category: "Urban Forms",
         description: "High-angle perspective descending through brutalist concrete structures.",
-        width: 1.5,
+        width: 2.2,
         height: 1.8,
         room: "room-1",
         wall: "south",
@@ -119,7 +118,7 @@ export const EXHIBITIONS: RoomData[] = [
         year: "2026",
         category: "City Motion",
         description: "Long exposure trails blending seamlessly beneath towering steel bridges.",
-        width: 1.5,
+        width: 2.2,
         height: 1.8,
         room: "room-1",
         wall: "south",
@@ -134,7 +133,7 @@ export const EXHIBITIONS: RoomData[] = [
         year: "2026",
         category: "Urban Light",
         description: "Reflective asphalt capturing vivid neon street reflections after rain.",
-        width: 1.5,
+        width: 2.2,
         height: 1.8,
         room: "room-1",
         wall: "south",
@@ -149,7 +148,6 @@ export const EXHIBITIONS: RoomData[] = [
         artist: "Studio Ades",
         year: "2025",
         category: "Interior Spatial",
-        description: "Grand white atrium ribs filtering diffuse morning sunlight.",
         width: 1.5,
         height: 1.8,
         room: "room-1",
@@ -164,7 +162,6 @@ export const EXHIBITIONS: RoomData[] = [
         artist: "Studio Ades",
         year: "2026",
         category: "Engineering",
-        description: "Precision tension cables intersecting against deep dusk skies.",
         width: 1.5,
         height: 1.8,
         room: "room-1",
@@ -228,7 +225,6 @@ export const EXHIBITIONS: RoomData[] = [
   // =========================================================================
   {
     id: "room-2",
-    roomNumber: 2,
     title: "ROOM 2",
     subtitle: "LIGHT & SHADOW DYNAMICS",
     description: "High-contrast chiaroscuro studies exploring the interplay of direct sunlight, sharp architectural shadows, and ethereal gradients.",
@@ -427,7 +423,6 @@ export const EXHIBITIONS: RoomData[] = [
   // =========================================================================
   {
     id: "room-3",
-    roomNumber: 3,
     title: "ROOM 3",
     subtitle: "GEOMETRIC STRUCTURES & FORMS",
     description: "Rhythm, repetition, and mathematical beauty found in modernist architecture and structural engineering.",
@@ -440,7 +435,7 @@ export const EXHIBITIONS: RoomData[] = [
       // North Wall (Z = -17.82) - 3 Artworks
       {
         id: "r3-n1",
-        image: "/images/room-3/art-1.webp",
+        image: "/images/room-3/art-1.jpg",
         title: "Tessellation Axis I",
         artist: "Studio Ades",
         year: "2025",
@@ -455,7 +450,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r3-n2",
-        image: "/images/room-3/art-1.webp",
+        image: "/images/room-3/art-1.jpg",
         title: "Perpendicular Shadow II",
         artist: "Studio Ades",
         year: "2025",
@@ -470,7 +465,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r3-n3",
-        image: "/images/room-3/art-1.webp",
+        image: "/images/room-3/art-1.jpg",
         title: "Spire Diagonal III",
         artist: "Studio Ades",
         year: "2026",
@@ -486,7 +481,7 @@ export const EXHIBITIONS: RoomData[] = [
       // East Wall (X = 17.82) - 3 Artworks
       {
         id: "r3-e1",
-        image: "/images/room-3/art-4.webp",
+          image: "/images/room-3/art-4.jpg",
         title: "Bridge Truss IV",
         artist: "Studio Ades",
         year: "2025",
@@ -501,7 +496,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r3-e2",
-        image: "/images/room-3/art-4.webp",
+          image: "/images/room-3/art-4.jpg",
         title: "Curved Vault V",
         artist: "Studio Ades",
         year: "2025",
@@ -516,7 +511,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r3-e3",
-        image: "/images/room-3/art-4.webp",
+          image: "/images/room-3/art-4.jpg",
         title: "Hyperbolic Paraboloid VI",
         artist: "Studio Ades",
         year: "2026",
@@ -532,7 +527,7 @@ export const EXHIBITIONS: RoomData[] = [
       // West Wall (Dividing Wall with Room 4, X = 4.18) - 3 Artworks
       {
         id: "r3-w1",
-        image: "/images/room-3/art-1.webp",
+          image: "/images/room-3/art-1.jpg",
         title: "Linear Module VII",
         artist: "Studio Ades",
         year: "2025",
@@ -547,7 +542,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r3-w2",
-        image: "/images/room-3/art-4.webp",
+          image: "/images/room-3/art-4.jpg",
         title: "Abstract Helix VIII",
         artist: "Studio Ades",
         year: "2026",
@@ -562,7 +557,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r3-w3",
-        image: "/images/room-3/art-1.webp",
+          image: "/images/room-3/art-1.jpg",
         title: "Prismatic Grid IX",
         artist: "Studio Ades",
         year: "2026",
@@ -578,7 +573,7 @@ export const EXHIBITIONS: RoomData[] = [
       // South Wall (Z = -3.38, flanking entry door at X = 11) - 2 Artworks
       {
         id: "r3-s1",
-        image: "/images/room-3/art-4.webp",
+          image: "/images/room-3/art-4.jpg",
         title: "Brutalist Pillar X",
         artist: "Studio Ades",
         year: "2026",
@@ -593,7 +588,7 @@ export const EXHIBITIONS: RoomData[] = [
       },
       {
         id: "r3-s2",
-        image: "/images/room-3/art-1.webp",
+          image: "/images/room-3/art-1.jpg",
         title: "Glass Intersection XI",
         artist: "Studio Ades",
         year: "2026",

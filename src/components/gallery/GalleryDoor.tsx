@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, CanvasTexture, RepeatWrapping, SRGBColorSpace, LinearMipmapLinearFilter } from 'three';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
@@ -65,7 +65,7 @@ interface GalleryDoorProps {
   initialAngle?: number;
 }
 
-export default function GalleryDoor({
+function GalleryDoor({
   position,
   rotation,
   roomId,
@@ -124,25 +124,25 @@ export default function GalleryDoor({
     >
       {/* ==================== 1. REALISTIC WOODEN DOOR FRAME ==================== */}
       {/* Top Header Jamb */}
-      <mesh position={[0, doorHeight + 0.05, 0]} castShadow receiveShadow>
+      <mesh position={[0, doorHeight + 0.05, 0]}>
         <boxGeometry args={[doorWidth + 0.22, 0.1, 0.24]} />
         <meshStandardMaterial color="#351F11" roughness={0.7} metalness={0.05} />
       </mesh>
 
       {/* Left Vertical Frame Post */}
-      <mesh position={[-doorWidth / 2 - 0.055, doorHeight / 2, 0]} castShadow receiveShadow>
+      <mesh position={[-doorWidth / 2 - 0.055, doorHeight / 2, 0]}>
         <boxGeometry args={[0.11, doorHeight + 0.1, 0.24]} />
         <meshStandardMaterial color="#351F11" roughness={0.7} metalness={0.05} />
       </mesh>
 
       {/* Right Vertical Frame Post */}
-      <mesh position={[doorWidth / 2 + 0.055, doorHeight / 2, 0]} castShadow receiveShadow>
+      <mesh position={[doorWidth / 2 + 0.055, doorHeight / 2, 0]}>
         <boxGeometry args={[0.11, doorHeight + 0.1, 0.24]} />
         <meshStandardMaterial color="#351F11" roughness={0.7} metalness={0.05} />
       </mesh>
 
       {/* Floor Metal Threshold Plate */}
-      <mesh position={[0, 0.015, 0]} receiveShadow>
+      <mesh position={[0, 0.015, 0]}>
         <boxGeometry args={[doorWidth + 0.1, 0.03, 0.26]} />
         <meshStandardMaterial color="#555555" roughness={0.4} metalness={0.8} />
       </mesh>
@@ -151,7 +151,7 @@ export default function GalleryDoor({
       <group position={[hingeOffset, 0, 0]} ref={hingeRef}>
         <group position={[-hingeOffset, 0, 0]}>
           {/* Main Solid Wood Door Slab */}
-          <mesh position={[0, doorHeight / 2, 0]} castShadow receiveShadow>
+          <mesh position={[0, doorHeight / 2, 0]}>
             <boxGeometry args={[doorWidth - 0.04, doorHeight - 0.02, 0.055]} />
             <meshStandardMaterial 
               map={woodTexture} 
@@ -162,19 +162,19 @@ export default function GalleryDoor({
           </mesh>
 
           {/* Decorative Wood Frame Beveling */}
-          <mesh position={[0, doorHeight / 2, 0.03]} castShadow>
+          <mesh position={[0, doorHeight / 2, 0.03]}>
             <boxGeometry args={[doorWidth - 0.14, doorHeight - 0.14, 0.01]} />
             <meshStandardMaterial color="#442918" roughness={0.7} />
           </mesh>
 
           {/* Recessed Lower Wood Panel */}
-          <mesh position={[0, doorHeight * 0.28, 0.032]} castShadow>
+          <mesh position={[0, doorHeight * 0.28, 0.032]}>
             <boxGeometry args={[doorWidth - 0.26, doorHeight * 0.38, 0.008]} />
             <meshStandardMaterial color="#3C2414" roughness={0.6} />
           </mesh>
 
           {/* Recessed Upper Wood Panel */}
-          <mesh position={[0, doorHeight * 0.72, 0.032]} castShadow>
+          <mesh position={[0, doorHeight * 0.72, 0.032]}>
             <boxGeometry args={[doorWidth - 0.26, doorHeight * 0.38, 0.008]} />
             <meshStandardMaterial color="#3C2414" roughness={0.6} />
           </mesh>
@@ -183,7 +183,6 @@ export default function GalleryDoor({
           {/* Handle Escutcheon Plate (Front) */}
           <mesh 
             position={[hingeSide === 'left' ? doorWidth / 2 - 0.16 : -doorWidth / 2 + 0.16, 1.05, 0.035]} 
-            castShadow
           >
             <boxGeometry args={[0.045, 0.24, 0.008]} />
             <meshStandardMaterial color="#C4A875" roughness={0.25} metalness={0.9} />
@@ -196,7 +195,6 @@ export default function GalleryDoor({
               1.12, 
               0.065
             ]} 
-            castShadow
           >
             <boxGeometry args={[0.14, 0.02, 0.02]} />
             <meshStandardMaterial color="#D8BE8A" roughness={0.2} metalness={0.95} />
@@ -205,7 +203,6 @@ export default function GalleryDoor({
           {/* Handle Escutcheon Plate (Back) */}
           <mesh 
             position={[hingeSide === 'left' ? doorWidth / 2 - 0.16 : -doorWidth / 2 + 0.16, 1.05, -0.035]} 
-            castShadow
           >
             <boxGeometry args={[0.045, 0.24, 0.008]} />
             <meshStandardMaterial color="#C4A875" roughness={0.25} metalness={0.9} />
@@ -218,7 +215,6 @@ export default function GalleryDoor({
               1.12, 
               -0.065
             ]} 
-            castShadow
           >
             <boxGeometry args={[0.14, 0.02, 0.02]} />
             <meshStandardMaterial color="#D8BE8A" roughness={0.2} metalness={0.95} />
@@ -228,7 +224,6 @@ export default function GalleryDoor({
           <mesh 
             position={[hingeSide === 'left' ? doorWidth / 2 - 0.16 : -doorWidth / 2 + 0.16, 0.96, 0.038]} 
             rotation={[Math.PI / 2, 0, 0]}
-            castShadow
           >
             <cylinderGeometry args={[0.009, 0.009, 0.008, 16]} />
             <meshStandardMaterial color="#222222" roughness={0.3} metalness={0.8} />
@@ -238,3 +233,5 @@ export default function GalleryDoor({
     </group>
   );
 }
+
+export default memo(GalleryDoor);

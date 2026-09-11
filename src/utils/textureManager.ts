@@ -19,13 +19,33 @@ const textureCache = new Map<string, CachedTextureEntry>();
 const placeholderCache = new Map<string, CanvasTexture>();
 const pendingLoads = new Map<string, Set<(texture: Texture) => void>>();
 const progressListeners = new Set<(loaded: number, total: number) => void>();
+const textureLoadQueue: Array<() => void> = [];
+let activeTextureLoads = 0;
+let textureQueueScheduled = false;
 let requestedTextureCount = 0;
 let loadedTextureCount = 0;
 
 // Maximum number of distinct high-res image textures to keep in GPU memory simultaneously
-const MAX_CACHED_TEXTURES = 32;
+const MAX_CACHED_TEXTURES = 64;
 
 const ARTWORK_LOAD_DISTANCE = 14;
+const MAX_CONCURRENT_TEXTURE_LOADS = 6;
+
+function processTextureLoadQueue() {
+  textureQueueScheduled = false;
+  while (activeTextureLoads < MAX_CONCURRENT_TEXTURE_LOADS && textureLoadQueue.length > 0) {
+    activeTextureLoads += 1;
+    textureLoadQueue.shift()?.();
+  }
+}
+
+function finishTextureLoad() {
+  activeTextureLoads = Math.max(0, activeTextureLoads - 1);
+  if (textureLoadQueue.length > 0 && !textureQueueScheduled) {
+    textureQueueScheduled = true;
+    setTimeout(processTextureLoadQueue, 0);
+  }
+}
 
 function notifyProgress() {
   progressListeners.forEach((listener) => listener(loadedTextureCount, requestedTextureCount));
@@ -60,7 +80,7 @@ export function getRoomPreloadIds(activeRoomId: string, visitorPos: [number, num
 export function preloadRoomAssets(roomIds: string[]) {
   roomIds.forEach((roomId) => {
     const room = EXHIBITIONS.find((candidate) => candidate.id === roomId);
-    room?.artworks.forEach((artwork) => loadArtworkTexture(artwork, () => undefined, false));
+    room?.artworks.forEach((artwork) => loadArtworkTexture(artwork, () => undefined));
   });
 }
 
@@ -353,9 +373,9 @@ export function loadArtworkTexture(
   // 1. If already in cache, reuse immediately
   const existing = textureCache.get(cacheKey);
   if (existing) {
-    existing.refCount += 1;
+    if (retain) existing.refCount += 1;
     existing.lastAccessed = Date.now();
-    onLoaded(existing.texture);
+    if (retain) onLoaded(existing.texture);
 
     return () => {
       isSubscribed = false;
@@ -386,14 +406,15 @@ export function loadArtworkTexture(
   requestedTextureCount += 1;
   notifyProgress();
 
-  // 2. Load asynchronously via Three.js TextureLoader
-  textureLoader.load(
+  // Queue image decoding and GPU uploads so entering a room cannot start a large burst.
+  textureLoadQueue.push(() => textureLoader.load(
     optimizedUrl,
     (texture) => {
       texture.colorSpace = SRGBColorSpace;
-      texture.generateMipmaps = true;
-      texture.minFilter = LinearMipmapLinearFilter;
-      texture.anisotropy = 2;
+      texture.needsUpdate = true;
+      texture.generateMipmaps = false;
+      texture.minFilter = LinearFilter;
+      texture.anisotropy = 1;
 
       // Check if cache size exceeds limit, evict oldest unreferenced textures
       if (textureCache.size >= MAX_CACHED_TEXTURES) {
@@ -415,14 +436,17 @@ export function loadArtworkTexture(
       pendingLoads.delete(cacheKey);
       listeners?.forEach((listener) => listener(texture));
       if (isSubscribed && retain) onLoaded(texture);
+      finishTextureLoad();
     },
     undefined,
     () => {
       pendingLoads.delete(cacheKey);
       loadedTextureCount += 1;
       notifyProgress();
+      finishTextureLoad();
     }
-  );
+  ));
+  processTextureLoadQueue();
 
   return () => {
     isSubscribed = false;

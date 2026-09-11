@@ -49,6 +49,8 @@ export default function PlayerController() {
 
   // Store sync rate controller
   const lastStoreUpdate = useRef<number>(0);
+  const lastSyncedPosition = useRef(new Vector3(Infinity, Infinity, Infinity));
+  const lastSyncedTarget = useRef(new Vector3(Infinity, Infinity, Infinity));
 
   // Initialize camera position from store on mount
   useEffect(() => {
@@ -250,6 +252,8 @@ export default function PlayerController() {
           pitch.current = Math.asin(scratchDir.y);
         }
 
+        lastSyncedPosition.current.copy(camera.position);
+        lastSyncedTarget.current.copy(currentLookAt.current);
         store.setVisitorPosition([camera.position.x, camera.position.y, camera.position.z]);
         store.setVisitorTarget([currentLookAt.current.x, currentLookAt.current.y, currentLookAt.current.z]);
         const arrivedRoom = getRoomIdFromPosition(camera.position.x, camera.position.z);
@@ -345,10 +349,16 @@ export default function PlayerController() {
 
     // Sync player coordinates to store
     const now = state.clock.getElapsedTime();
-    if (now - lastStoreUpdate.current > 0.1) {
+    if (now - lastStoreUpdate.current > 0.25) {
       lastStoreUpdate.current = now;
-      store.setVisitorPosition([camera.position.x, camera.position.y, camera.position.z]);
-      store.setVisitorTarget([currentLookAt.current.x, currentLookAt.current.y, currentLookAt.current.z]);
+      const positionChanged = lastSyncedPosition.current.distanceToSquared(camera.position) > 0.0025;
+      const targetChanged = lastSyncedTarget.current.distanceToSquared(currentLookAt.current) > 0.01;
+      if (positionChanged || targetChanged) {
+        lastSyncedPosition.current.copy(camera.position);
+        lastSyncedTarget.current.copy(currentLookAt.current);
+        store.setVisitorPosition([camera.position.x, camera.position.y, camera.position.z]);
+        store.setVisitorTarget([currentLookAt.current.x, currentLookAt.current.y, currentLookAt.current.z]);
+      }
       const arrivedRoom = getRoomIdFromPosition(camera.position.x, camera.position.z);
       if (store.activeRoomId !== arrivedRoom) {
         store.setActiveRoomId(arrivedRoom);

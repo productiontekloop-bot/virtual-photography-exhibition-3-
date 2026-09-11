@@ -1,42 +1,35 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
-import { Texture, FrontSide } from 'three';
+import { memo, useEffect, useState, useRef } from 'react';
+import { useThree } from '@react-three/fiber';
+import { MeshStandardMaterial, Texture, FrontSide } from 'three';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
 import { ArtworkData } from '../../data/exhibitions';
-import { getOrCreatePlaceholderTexture, loadArtworkTexture } from '../../utils/textureManager';
+import { loadArtworkTexture } from '../../utils/textureManager';
 
 interface ArtworkProps {
   artwork: ArtworkData;
 }
 
-export default function Artwork({ artwork }: ArtworkProps) {
+function Artwork({ artwork }: ArtworkProps) {
   const [texture, setTexture] = useState<Texture | null>(null);
   const pointerDownPos = useRef({ x: 0, y: 0 });
   const lastClickTime = useRef(0);
-
-  // 1. Get procedural photographic placeholder texture immediately
-  const placeholderTexture = useMemo(() => {
-    return getOrCreatePlaceholderTexture(artwork);
-  }, [artwork]);
-
-  // Texture loading follows room transitions; the preloader handles the nearby room.
-  const shouldLoadImage = useGalleryStore((state) => (
-    artwork.room === 'hallway' || artwork.room === state.activeRoomId
-  ));
+  const imageMaterial = useRef<MeshStandardMaterial>(null);
+  const invalidate = useThree((state) => state.invalidate);
 
   useEffect(() => {
-    if (!shouldLoadImage) {
-      setTexture(null);
-      return;
-    }
-
     const unsubscribe = loadArtworkTexture(artwork, (loadedTex) => {
       setTexture(loadedTex);
+      if (imageMaterial.current) {
+        imageMaterial.current.map = loadedTex;
+        imageMaterial.current.needsUpdate = true;
+      }
+      invalidate();
     });
 
     return () => {
       unsubscribe();
     };
-  }, [shouldLoadImage, artwork]);
+  }, [artwork, invalidate]);
 
   const navigateToArtwork = useGalleryStore((state) => state.navigateToArtwork);
 
@@ -93,22 +86,25 @@ export default function Artwork({ artwork }: ArtworkProps) {
     <group 
       position={[artwork.position[0], artwork.position[1], artwork.position[2]]}
       rotation={[artwork.rotation[0], artwork.rotation[1], artwork.rotation[2]]}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
     >
       {isFrameless ? (
         <>
           {/* Frameless artwork: Exact original size, zero frame, zero border, zero matting */}
-          <mesh position={[0, 0, 0.002]}>
+          <mesh position={[0, 0, 0.002]} raycast={() => null}>
             <planeGeometry args={[displayWidth + 0.04, displayHeight + 0.04]} />
             <meshBasicMaterial color="#000000" transparent opacity={0.14} depthWrite={false} />
           </mesh>
-          <mesh position={[0, 0, 0.008]} receiveShadow>
+          <mesh
+            position={[0, 0, 0.008]}
+            onPointerOver={handlePointerOver}
+            onPointerOut={handlePointerOut}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+          >
             <planeGeometry args={[displayWidth, displayHeight]} />
             <meshStandardMaterial 
-              map={texture || placeholderTexture} 
+              ref={imageMaterial}
+              map={texture} 
               roughness={0.06} 
               metalness={0.0} 
               toneMapped={true} 
@@ -120,37 +116,19 @@ export default function Artwork({ artwork }: ArtworkProps) {
         <>
           {/* Standard framed gallery artwork */}
           {/* 1. SOFT CONTACT SHADOW ON WALL */}
-          <mesh position={[0, 0, 0.002]}>
+          <mesh position={[0, 0, 0.002]} raycast={() => null}>
             <planeGeometry args={[frameTotalWidth + 0.12, frameTotalHeight + 0.12]} />
             <meshBasicMaterial color="#000000" transparent opacity={0.16} depthWrite={false} />
           </mesh>
 
           {/* 2. FRAME BACKING BOARD */}
-          <mesh position={[0, 0, 0.01]} receiveShadow>
+          <mesh position={[0, 0, 0.01]} raycast={() => null}>
             <boxGeometry args={[frameTotalWidth, frameTotalHeight, 0.016]} />
             <meshStandardMaterial color="#1C1C1E" roughness={0.8} />
           </mesh>
 
-          {/* 3. 3D OUTER FRAME BEZEL MOLDINGS (4 perimeter borders) */}
-          <mesh position={[0, displayHeight / 2 + frameBorder / 2, 0.022]} receiveShadow>
-            <boxGeometry args={[frameTotalWidth, frameBorder, 0.03]} />
-            <meshStandardMaterial color="#141416" roughness={0.4} metalness={0.25} />
-          </mesh>
-          <mesh position={[0, -displayHeight / 2 - frameBorder / 2, 0.022]} receiveShadow>
-            <boxGeometry args={[frameTotalWidth, frameBorder, 0.03]} />
-            <meshStandardMaterial color="#141416" roughness={0.4} metalness={0.25} />
-          </mesh>
-          <mesh position={[-displayWidth / 2 - frameBorder / 2, 0, 0.022]} receiveShadow>
-            <boxGeometry args={[frameBorder, displayHeight, 0.03]} />
-            <meshStandardMaterial color="#141416" roughness={0.4} metalness={0.25} />
-          </mesh>
-          <mesh position={[displayWidth / 2 + frameBorder / 2, 0, 0.022]} receiveShadow>
-            <boxGeometry args={[frameBorder, displayHeight, 0.03]} />
-            <meshStandardMaterial color="#141416" roughness={0.4} metalness={0.25} />
-          </mesh>
-
-          {/* 4. ARCHIVAL PASSE-PARTOUT (Warm museum archival mat board) */}
-          <mesh position={[0, 0, 0.020]} receiveShadow>
+          {/* 3. ARCHIVAL PASSE-PARTOUT (Warm museum archival mat board) */}
+          <mesh position={[0, 0, 0.020]} raycast={() => null}>
             <planeGeometry args={[displayWidth, displayHeight]} />
             <meshStandardMaterial 
               color="#FCFCF9" 
@@ -160,11 +138,18 @@ export default function Artwork({ artwork }: ArtworkProps) {
             />
           </mesh>
 
-          {/* 5. ARTWORK PHOTOGRAPH CANVAS */}
-          <mesh position={[0, 0, 0.024]} receiveShadow>
+          {/* 4. ARTWORK PHOTOGRAPH CANVAS */}
+          <mesh
+            position={[0, 0, 0.024]}
+            onPointerOver={handlePointerOver}
+            onPointerOut={handlePointerOut}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+          >
             <planeGeometry args={[artWidth, artHeight]} />
             <meshStandardMaterial 
-              map={texture || placeholderTexture} 
+              ref={imageMaterial}
+              map={texture} 
               roughness={0.08} 
               metalness={0.0} 
               toneMapped={true} 
@@ -176,3 +161,5 @@ export default function Artwork({ artwork }: ArtworkProps) {
     </group>
   );
 }
+
+export default memo(Artwork);

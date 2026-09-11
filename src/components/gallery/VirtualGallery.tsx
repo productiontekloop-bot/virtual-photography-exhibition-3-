@@ -1,97 +1,28 @@
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect } from 'react';
 import { EXHIBITIONS } from '../../data/exhibitions';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
-import { checkCollision, getRoomIdFromPosition } from '../../utils/collision';
 import GalleryLighting from './GalleryLighting';
 import GalleryArchitecture from './GalleryArchitecture';
 import CentralHallway from './CentralHallway';
 import ExhibitionRoom from './ExhibitionRoom';
 import PlayerController from './PlayerController';
-import { getRoomPreloadIds, preloadRoomAssets } from '../../utils/textureManager';
+import { preloadRoomAssets } from '../../utils/textureManager';
 
 function RoomAssetPreloader() {
   useEffect(() => {
-    let lastKey = '';
-    const preload = (state: ReturnType<typeof useGalleryStore.getState>) => {
-      if (state.viewMode !== 'walkthrough') return;
-      const key = getRoomPreloadIds(state.activeRoomId, state.visitorPosition).join('|');
-      if (key !== lastKey) {
-        lastKey = key;
-        preloadRoomAssets(key.split('|'));
-      }
-    };
-    preload(useGalleryStore.getState());
-    return useGalleryStore.subscribe(preload);
+    preloadRoomAssets(EXHIBITIONS.map((room) => room.id));
   }, []);
   return null;
 }
 
 export default function VirtualGallery() {
-  const pointerDownPos = useRef({ x: 0, y: 0 });
-  const pointerDownTime = useRef(0);
-  
-  const moveToPosition = useGalleryStore((state) => state.moveToPosition);
   const selectedArtwork = useGalleryStore((state) => state.selectedArtwork);
-  const viewMode = useGalleryStore((state) => state.viewMode);
-
-  const handlePointerDown = (e: any) => {
-    if (e.button !== 0 && e.nativeEvent instanceof MouseEvent) return;
-    pointerDownPos.current = { x: e.clientX, y: e.clientY };
-    pointerDownTime.current = Date.now();
-  };
-
-  const handlePointerUp = (e: any) => {
-    if (selectedArtwork) return;
-    if (e.button !== 0 && e.nativeEvent instanceof MouseEvent) return;
-
-    const dx = e.clientX - pointerDownPos.current.x;
-    const dy = e.clientY - pointerDownPos.current.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const elapsed = Date.now() - pointerDownTime.current;
-
-    // Distinguish quick click/tap from an orbital or look drag
-    if (dist < 5 && elapsed < 280) {
-      if (e.point) {
-        // Movement is only allowed from the gallery floor. Walls and artwork stop propagation.
-        const isFloorClick = Math.abs(e.point.y) <= 0.35;
-        if (!isFloorClick) return;
-
-        if (viewMode === 'floorplan' || viewMode === 'perspective') {
-          // If in overview, clicking on a room or corridor enters walkthrough at that spot
-          const verified = checkCollision(e.point.x, e.point.z);
-          useGalleryStore.getState().moveToPosition(
-            [verified.x, 1.65, verified.z],
-            [verified.x, 1.65, verified.z - 3]
-          );
-          useGalleryStore.setState({ viewMode: 'walkthrough' });
-          return;
-        }
-
-        // Room changes must be door-to-door ONLY:
-        // Players can only move within their current room when clicking on the floor.
-        // Room transitions can only be made by walking through doors or interacting directly with doors.
-        const { visitorPosition } = useGalleryStore.getState();
-        const currentRoom = getRoomIdFromPosition(visitorPosition[0], visitorPosition[2]);
-        const verified = checkCollision(e.point.x, e.point.z, visitorPosition[0], visitorPosition[2]);
-        const targetRoom = getRoomIdFromPosition(verified.x, verified.z);
-
-        if (currentRoom === targetRoom) {
-          const lookDirX = verified.x - visitorPosition[0];
-          const lookDirZ = verified.z - visitorPosition[2];
-          moveToPosition(
-            [verified.x, 1.65, verified.z],
-            [verified.x + lookDirX * 0.5, 1.65, verified.z + lookDirZ * 0.5]
-          );
-        }
-      }
-    }
-  };
 
   return (
     <div id="canvas-container" className="w-full h-full select-none relative bg-[#E6E6E3] block">
       <Canvas
-        dpr={[1, 1.25]}
+        dpr={[0.85, 1]}
         frameloop="demand"
         camera={{
           fov: 56,
@@ -110,10 +41,7 @@ export default function VirtualGallery() {
         }}
       >
         <Suspense fallback={null}>
-          <group 
-            onPointerDown={handlePointerDown} 
-            onPointerUp={handlePointerUp}
-            onDoubleClick={(e) => {
+          <group onDoubleClick={(e) => {
               e.stopPropagation();
             }}
           >

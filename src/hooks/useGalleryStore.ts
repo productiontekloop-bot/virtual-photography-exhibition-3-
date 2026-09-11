@@ -171,9 +171,6 @@ export const useGalleryStore = create<GalleryState>((set, get) => ({
   },
 
   navigateToArtwork: (artwork: ArtworkData) => {
-    if (get().viewMode !== 'walkthrough') {
-      set({ viewMode: 'walkthrough' });
-    }
     // Calculate normal offset vector pointing out of the wall based on artwork rotation
     const nx = Math.sin(artwork.rotation[1]);
     const nz = Math.cos(artwork.rotation[1]);
@@ -183,6 +180,7 @@ export const useGalleryStore = create<GalleryState>((set, get) => ({
     const targetZ = artwork.position[2] + nz * distance;
 
     set({
+      viewMode: 'walkthrough',
       selectedArtwork: null,
       targetPosition: [targetX, targetY, targetZ],
       targetLookAt: [artwork.position[0], artwork.position[1], artwork.position[2]],

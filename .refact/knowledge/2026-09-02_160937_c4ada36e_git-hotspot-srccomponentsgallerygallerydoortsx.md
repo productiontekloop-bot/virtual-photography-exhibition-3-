@@ -6,7 +6,7 @@ tags:
 - git
 - hotspot
 created: 2026-09-02
-updated: 2026-09-02
+updated: 2026-09-10
 filenames:
 - src/components/gallery/GalleryDoor.tsx
 links: []
@@ -14,7 +14,7 @@ kind: code
 status: proposed
 superseded_by: null
 deprecated_at: null
-review_after: 2026-09-03
+review_after: 2026-09-10
 source_chat_id: null
 created_at: 2026-09-02T23:09:37.577657700+00:00
 summary: null
