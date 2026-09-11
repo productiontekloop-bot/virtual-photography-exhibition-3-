@@ -1,18 +1,18 @@
 import { useGalleryStore } from '../../hooks/useGalleryStore';
 
+const roomLights = [
+  { id: 'room-5', position: [-14, 3.6, -8] as [number, number, number] },
+  { id: 'room-4', position: [-3, 3.6, -10.6] as [number, number, number] },
+  { id: 'room-3', position: [11, 3.6, -10.6] as [number, number, number] },
+  { id: 'room-2', position: [-3, 3.6, 10.6] as [number, number, number] },
+  { id: 'room-1', position: [11, 3.6, 10.6] as [number, number, number] },
+];
+
 export default function GalleryLighting() {
   const activeRoomId = useGalleryStore((state) => state.activeRoomId);
   const viewMode = useGalleryStore((state) => state.viewMode);
 
   const isOverview = viewMode === 'perspective' || viewMode === 'floorplan';
-  const roomLights = [
-    { id: 'room-5', position: [-14, 3.6, -8] as [number, number, number] },
-    { id: 'room-4', position: [-3, 3.6, -10.6] as [number, number, number] },
-    { id: 'room-3', position: [11, 3.6, -10.6] as [number, number, number] },
-    { id: 'room-2', position: [-3, 3.6, 10.6] as [number, number, number] },
-    { id: 'room-1', position: [11, 3.6, 10.6] as [number, number, number] },
-  ];
-
   return (
     <>
       {/* 1. Hemisphere Light - Natural Sky / Gallery Floor Ambient Bounce */}

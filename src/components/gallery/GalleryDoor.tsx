@@ -1,6 +1,6 @@
 import { memo, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { MathUtils, CanvasTexture, RepeatWrapping, SRGBColorSpace, LinearMipmapLinearFilter } from 'three';
+import { MathUtils, CanvasTexture, RepeatWrapping, SRGBColorSpace, LinearFilter } from 'three';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
 
 const doorOpenDistance = 2.4;
@@ -12,8 +12,8 @@ function getSharedWoodTexture(): CanvasTexture {
   if (sharedWoodTexture) return sharedWoodTexture;
 
   const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 1024;
+  canvas.width = 256;
+  canvas.height = 512;
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     sharedWoodTexture = new CanvasTexture(canvas);
@@ -22,34 +22,34 @@ function getSharedWoodTexture(): CanvasTexture {
 
   // Base warm walnut tone
   ctx.fillStyle = '#4A2E1B';
-  ctx.fillRect(0, 0, 512, 1024);
+  ctx.fillRect(0, 0, 256, 512);
 
   // Vertical wood fibers and grain waves
-  for (let y = 0; y < 1024; y += 4) {
+  for (let y = 0; y < 512; y += 2) {
     const wave = Math.sin(y * 0.02) * 12 + Math.sin(y * 0.08) * 4;
-    for (let x = 0; x < 512; x += 2) {
+    for (let x = 0; x < 256; x += 1) {
       const noise = (Math.random() - 0.5) * 20;
       const shade = 55 + Math.sin((x + wave) * 0.08) * 18 + noise;
       const r = Math.floor(shade * 1.25);
       const g = Math.floor(shade * 0.85);
       const b = Math.floor(shade * 0.55);
       ctx.fillStyle = `rgb(${r},${g},${b})`;
-      ctx.fillRect(x, y, 2, 4);
+      ctx.fillRect(x, y, 1, 2);
     }
   }
 
   // Soft vertical plank grooves
   ctx.fillStyle = 'rgba(20, 10, 5, 0.45)';
-  for (let px = 64; px < 512; px += 128) {
-    ctx.fillRect(px, 0, 3, 1024);
+  for (let px = 32; px < 256; px += 64) {
+    ctx.fillRect(px, 0, 2, 512);
   }
 
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;
   texture.wrapS = RepeatWrapping;
   texture.wrapT = RepeatWrapping;
-  texture.generateMipmaps = true;
-  texture.minFilter = LinearMipmapLinearFilter;
+  texture.generateMipmaps = false;
+  texture.minFilter = LinearFilter;
 
   sharedWoodTexture = texture;
   return sharedWoodTexture;

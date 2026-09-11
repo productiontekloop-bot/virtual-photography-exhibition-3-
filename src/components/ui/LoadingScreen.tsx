@@ -37,7 +37,7 @@ export default function LoadingScreen() {
   return (
     <div 
       id="loading-screen"
-      className={`fixed inset-0 z-[200] bg-[#FDFBF7] flex flex-col items-center justify-center p-8 transition-opacity duration-500 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+      className={`fixed inset-0 z-200 bg-[#FDFBF7] flex flex-col items-center justify-center p-8 transition-opacity duration-500 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}
     >
       {/* Editorial Branding Logo Stack */}
       <div className="flex flex-col items-center gap-2 mb-10 text-center select-none">
@@ -50,8 +50,8 @@ export default function LoadingScreen() {
       </div>
 
       {/* Progress metrics and animated slider */}
-      <div className="w-full max-w-[200px] flex flex-col items-center gap-2 font-sans">
-        <div className="w-full h-[2px] bg-neutral-100 overflow-hidden rounded">
+      <div className="w-full max-w-50 flex flex-col items-center gap-2 font-sans">
+        <div className="w-full h-0.5 bg-neutral-100 overflow-hidden rounded">
           <div 
             className="h-full bg-[#28C7C2] transition-all duration-300 ease-out" 
             style={{ width: `${progress}%` }}

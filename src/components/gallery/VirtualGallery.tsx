@@ -17,8 +17,6 @@ function RoomAssetPreloader() {
 }
 
 export default function VirtualGallery() {
-  const selectedArtwork = useGalleryStore((state) => state.selectedArtwork);
-
   return (
     <div id="canvas-container" className="w-full h-full select-none relative bg-[#E6E6E3] block">
       <Canvas

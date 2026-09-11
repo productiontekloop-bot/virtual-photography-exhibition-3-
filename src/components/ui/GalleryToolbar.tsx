@@ -113,7 +113,7 @@ export default function GalleryToolbar() {
         <button
           id="btn-fullscreen"
           onClick={toggleFullscreen}
-          className="w-9 h-9 rounded-md bg-white/90 backdrop-blur-md hover:bg-neutral-100 border border-neutral-200 text-neutral-800 flex items-center justify-center transition-all shadow-sm active:scale-95 hidden sm:flex"
+          className="w-9 h-9 rounded-md bg-white/90 backdrop-blur-md hover:bg-neutral-100 border border-neutral-200 text-neutral-800 items-center justify-center transition-all shadow-sm active:scale-95 hidden sm:flex"
           title="Toggle Fullscreen"
         >
           {isFullscreen ? <Minimize size={15} /> : <Maximize size={15} />}

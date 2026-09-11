@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CanvasTexture, RepeatWrapping, SRGBColorSpace, LinearMipmapLinearFilter } from 'three';
+import { CanvasTexture, RepeatWrapping, SRGBColorSpace, LinearFilter } from 'three';
 import GalleryDoor from './GalleryDoor';
 import { useGalleryStore } from '../../hooks/useGalleryStore';
 
@@ -13,7 +13,7 @@ function getSharedFloorTextures(): { diffuse: CanvasTexture; bump: CanvasTexture
     return { diffuse: sharedFloorDiffuseMap, bump: sharedFloorBumpMap, roughness: sharedFloorRoughnessMap };
   }
 
-  const size = 1024;
+  const size = 512;
   // 1. Diffuse canvas (Color & Grain)
   const diffCanvas = document.createElement('canvas');
   diffCanvas.width = size;
@@ -221,22 +221,22 @@ function getSharedFloorTextures(): { diffuse: CanvasTexture; bump: CanvasTexture
   diffuseTex.wrapS = RepeatWrapping;
   diffuseTex.wrapT = RepeatWrapping;
   diffuseTex.repeat.set(8, 8);
-  diffuseTex.generateMipmaps = true;
-  diffuseTex.minFilter = LinearMipmapLinearFilter;
+  diffuseTex.generateMipmaps = false;
+  diffuseTex.minFilter = LinearFilter;
 
   const bumpTex = new CanvasTexture(bumpCanvas);
   bumpTex.wrapS = RepeatWrapping;
   bumpTex.wrapT = RepeatWrapping;
   bumpTex.repeat.set(8, 8);
-  bumpTex.generateMipmaps = true;
-  bumpTex.minFilter = LinearMipmapLinearFilter;
+  bumpTex.generateMipmaps = false;
+  bumpTex.minFilter = LinearFilter;
 
   const roughTex = new CanvasTexture(roughCanvas);
   roughTex.wrapS = RepeatWrapping;
   roughTex.wrapT = RepeatWrapping;
   roughTex.repeat.set(8, 8);
-  roughTex.generateMipmaps = true;
-  roughTex.minFilter = LinearMipmapLinearFilter;
+  roughTex.generateMipmaps = false;
+  roughTex.minFilter = LinearFilter;
 
   sharedFloorDiffuseMap = diffuseTex;
   sharedFloorBumpMap = bumpTex;

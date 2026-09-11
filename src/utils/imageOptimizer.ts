@@ -12,11 +12,3 @@ export function getOptimizedImageUrl(url: string, width = 720, quality = 75): st
   return url;
 }
 
-export function getHighResImageUrl(url: string): string {
-  if (!url) return url;
-  if (url.includes('unsplash.com')) {
-    const baseUrl = url.split('?')[0];
-    return `${baseUrl}?auto=format&fit=crop&w=1600&q=85`;
-  }
-  return url;
-}

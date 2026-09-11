@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CanvasTexture, SRGBColorSpace, LinearMipmapLinearFilter } from 'three';
+import { CanvasTexture, SRGBColorSpace, LinearFilter } from 'three';
 import ExhibitionHeading from './ExhibitionHeading';
 import Artwork from './Artwork';
 import { EXHIBITIONS, ArtworkData } from '../../data/exhibitions';
@@ -10,8 +10,8 @@ function getSharedBrandLogoTexture(): CanvasTexture {
   if (sharedBrandLogoTexture) return sharedBrandLogoTexture;
 
   const canvas = document.createElement('canvas');
-  canvas.width = 1024;
-  canvas.height = 512;
+  canvas.width = 512;
+  canvas.height = 256;
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     sharedBrandLogoTexture = new CanvasTexture(canvas);
@@ -20,31 +20,31 @@ function getSharedBrandLogoTexture(): CanvasTexture {
 
   // Solid black modern gallery plaque
   ctx.fillStyle = '#141414';
-  ctx.fillRect(0, 0, 1024, 512);
+  ctx.fillRect(0, 0, 512, 256);
 
   // Elegant double border
   ctx.strokeStyle = '#FFFFFF';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(24, 24, 976, 464);
+  ctx.lineWidth = 2;
+  ctx.strokeRect(12, 12, 488, 232);
   ctx.lineWidth = 1;
-  ctx.strokeRect(34, 34, 956, 444);
+  ctx.strokeRect(17, 17, 478, 222);
 
   // Draw cursive "Photography"
   ctx.fillStyle = '#FFFFFF';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = 'italic 105px "Brush Script MT", "Great Vibes", "Playfair Display Italic", "Georgia", "serif"';
-  ctx.fillText('Photography', 512, 210);
+  ctx.font = 'italic 52px "Brush Script MT", "Great Vibes", "Playfair Display Italic", "Georgia", "serif"';
+  ctx.fillText('Photography', 256, 105);
 
   // Draw "YVES ADES"
-  ctx.font = '300 44px "Inter", "Helvetica Neue", "Arial", "sans-serif"';
-  ctx.letterSpacing = '14px';
-  ctx.fillText('YVES ADES', 512, 335);
+  ctx.font = '300 22px "Inter", "Helvetica Neue", "Arial", "sans-serif"';
+  ctx.letterSpacing = '7px';
+  ctx.fillText('YVES ADES', 256, 168);
 
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;
-  texture.generateMipmaps = true;
-  texture.minFilter = LinearMipmapLinearFilter;
+  texture.generateMipmaps = false;
+  texture.minFilter = LinearFilter;
 
   sharedBrandLogoTexture = texture;
   return sharedBrandLogoTexture;
